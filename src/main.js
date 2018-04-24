@@ -1,50 +1,39 @@
 import $ from 'jquery';
-// import { function } from './filename';
+import { GetData } from './backend.js';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles.css';
 
+let displayData = function(response) {
+  console.log("HELLO?!?!");
+  $('#show-animal-gif').append(`<img src="${response.data[0].images.fixed_height.url}">`);
+}
+
+let showErrors = function(error) {
+  $('#errors').text(`There was an error processing your request: ${error.responseText}. Please try again.`);
+}
+
+let displayData2 = function(response) {
+  console.log("HELLO?!?!");
+  $('#show-animal-gif2').append(`<img src="${response.data[0].images.fixed_height.url}">`);
+}
+
+let showErrors2 = function(error) {
+  $('#errors2').text(`There was an error processing your request: ${error.responseText}. Please try again.`);
+}
+
 $(document).ready(function() {
+  let getData = new GetData();
+
   $("#animal-button").click(function() {
-    let animal = $('#animal').val();
+    let userInput = $('#animal').val();
     $('#animal').val("");
-    $.ajax({
-      url: `http://api.giphy.com/v1/gifs/search?api_key=${process.env.API_KEY}&q=${animal}`,
-      type: 'GET',
-      data: {
-        format: 'json'
-      },
-      success: function(response) {
-        console.log(response);
-        $('#show-animal-name').text(animal);
-        $('#show-animal-gif').append(`<img src="${response.data[0].images.fixed_height.url}">`);
-      },
-      error: function() {
-        $('#errors').text("There was an error processing your request. Please try again.");
-      }
-    });
+    getData.apiCall(userInput, displayData, showErrors);
   });
 
-  $("#weather-button").click(function() {
-    let city = $('#zipcode').val();
-    $('#zipcode').val('');
-
-    let request = new XMLHttpRequest();
-    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.API_KEY}`;
-
-    request.onreadystatechange = function () {
-      if (this.readyState === 4 && this.status === 200) {
-        let response = JSON.parse(this.responseText);
-        getElements(response);
-      }
-    }
-
-    request.open("GET", url, true);
-    request.send();
-
-    getElements = function(response) {
-      $('#show-humidity').text(`The humidity in ${city} is ${response.main.humidity}%`);
-      $('#show-temp').text(`The temperature in Kelvins is ${response.main.temp} degrees.`);
-    }
+  $("#animal-button2").click(function() {
+    let userInput2 = $('#animal2').val();
+    $('#animal2').val("");
+    getData.promiseCall(userInput2, displayData2, showErrors2);
   });
 });
