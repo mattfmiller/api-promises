@@ -24,4 +24,27 @@ $(document).ready(function() {
       }
     });
   });
+
+  $("#weather-button").click(function() {
+    let city = $('#zipcode').val();
+    $('#zipcode').val('');
+
+    let request = new XMLHttpRequest();
+    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.API_KEY}`;
+
+    request.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        let response = JSON.parse(this.responseText);
+        getElements(response);
+      }
+    }
+
+    request.open("GET", url, true);
+    request.send();
+
+    getElements = function(response) {
+      $('#show-humidity').text(`The humidity in ${city} is ${response.main.humidity}%`);
+      $('#show-temp').text(`The temperature in Kelvins is ${response.main.temp} degrees.`);
+    }
+  });
 });
